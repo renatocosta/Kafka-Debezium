@@ -1,0 +1,28 @@
+Name: PicPay Data Ingestion Pipeline
+Repo: picpay-data-ingestion-pipeline
+
+Patterns: Strangler, CDC
+
+Com o debezium você monitora o CDC
+
+
+Connector JDBC: Vai haver somente a replicação de toda uma tabela
+				Como se vc desse um select * from tabela x
+
+Etapas para know-how:
+Entende o que é o Cdc e como a replicação lógica possibilita ele
+Depeois vai pro kafka connect e depois as especificidades do Debezium
+Segui esse path, deu bom
+Debezium é um tipo de connector kafka
+
+----------------------------------------------------------------------------------------
+
+Avro schema registry - é um nice-to-have
+----------------------------------------------------------------------------------------
+
+Monitor e não permiter que o Kafka Connect assuma a responsabilidade pela criação dos tópicos, consumers e entre outros. (Deve seguir o esquema de PR para o repo kafka-topic)
+
+
+Se o Debezium ficar down como garantir o não reprocesamento?	
+----------------------------------------------------------------------------------------
+Em caso de mudança estrutural da tabela isso fica transparente?
