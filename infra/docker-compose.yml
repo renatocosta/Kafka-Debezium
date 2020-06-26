@@ -1,0 +1,56 @@
+version: '2'
+services:
+  zookeeper:
+    container_name: debezium_zookeeper
+    image: debezium/zookeeper:${DEBEZIUM_VERSION}
+    ports:
+     - 2181:2181
+     - 2888:2888
+     - 3888:3888
+    networks:
+      - bubble     
+  kafka:
+    container_name: debezium_kafka
+    image: debezium/kafka:1.1:${DEBEZIUM_VERSION}
+    ports:
+     - 9092:9092
+    links:
+     - zookeeper
+    environment:
+     - ZOOKEEPER_CONNECT=zookeeper:2181
+     - ADVERTISED_HOST_NAME=192.168.0.3
+    networks:
+      - bubble
+  schema-registry:
+    container_name: debezium_schema-registry  
+    image: confluentinc/cp-schema-registry
+    ports:
+     - 8181:8181
+     - 8081:8081
+    environment:
+     - SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=zookeeper:2181
+     - SCHEMA_REGISTRY_HOST_NAME=schema-registry
+     - SCHEMA_REGISTRY_LISTENERS=http://schema-registry:8081
+    links:
+     - zookeeper
+    networks:
+      - bubble     
+  debezium:
+    container_name: debezium
+    build: .
+    ports:
+     - 8083:8083
+    links:
+     - kafka
+     - schema-registry
+    environment:
+     - BOOTSTRAP_SERVERS=kafka:9092
+     - GROUP_ID=1
+     - CONFIG_STORAGE_TOPIC=connect_configs
+     - OFFSET_STORAGE_TOPIC=connect_offsets
+     - STATUS_STORAGE_TOPIC=connect_statuses
+    networks:
+      - bubble     
+networks:
+  bubble:
+    external: true     

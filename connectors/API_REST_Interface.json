@@ -1,0 +1,575 @@
+{
+	"info": {
+		"_postman_id": "d680802b-591f-45fa-ab3e-0df3ebeb02c9",
+		"name": "Kafka Connect REST Interface",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Connectors",
+			"item": [
+				{
+					"name": "MySQL",
+					"item": [
+						{
+							"name": "Source",
+							"item": [
+								{
+									"name": "Create Source",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"legacy-transactions-source232\",           \n            \"config\": {\n                  \"connector.class\": \"io.debezium.connector.mysql.MySqlConnector\",\n                  \"tasks.max\": \"1\",\n                  \"database.hostname\": \"db.legacy.dev\",\n                  \"database.port\": \"3306\",\n                  \"database.user\": \"root\",\n                  \"database.password\": \"root\",\n                  \"database.server.id\": \"184054\",\n                  \"database.server.name\": \"server\",\n                  \"database.whitelist\": \"picpay\",\n                  \"table.types\": \"TABLE\",\n                  \"table.whitelist\": \"picpay.transactions\",    \n                  \"mode\":\"incrementing\",\n                  \"incrementing.column.name\": \"id\",                                                                     \n                  \"topic\":\"server.picpay.transactions\",\n                  \"database.history.kafka.bootstrap.servers\": \"kafka:9092\",\n                  \"database.history.kafka.topic\": \"schema-changes.transactions\"\t\t\n                }\n}",
+											"options": {
+												"raw": {}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8083/connectors",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8083",
+											"path": [
+												"connectors"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create Source with Avro serializer",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"legacy-acos-avro-source\",           \n            \"config\": {\n                  \"connector.class\": \"io.debezium.connector.mysql.MySqlConnector\",\n                  \"tasks.max\": \"1\",\n                  \"database.hostname\": \"db.legacy.dev\",\n                  \"database.port\": \"3306\",\n                  \"database.user\": \"root\",\n                  \"database.password\": \"root\",\n                  \"database.server.id\": \"184054\",\n                  \"database.server.name\": \"server\",\n                  \"database.whitelist\": \"picpay\",\n                  \"table.types\": \"TABLE\",\n                  \"table.whitelist\": \"picpay.acos\",    \n                  \"mode\":\"incrementing\",\n                  \"incrementing.column.name\": \"id\",                                                                     \n                  \"topic\":\"server.picpay.acos\",\n                  \"poll.interval.ms\": \"5000\",\n                  \"batch.max.rows\": \"10000\",\n                  \"key.converter\": \"io.confluent.connect.avro.AvroConverter\",\n                  \"key.converter.schema.registry.url\": \"http://kafka-zookeeper_schema-registry_1:8081\",\n                  \"value.converter\": \"io.confluent.connect.avro.AvroConverter\",\n                  \"value.converter.schema.registry.url\": \"http://kafka-zookeeper_schema-registry_1:8081\",                  \n                  \"database.history.kafka.bootstrap.servers\": \"kafka:9092\",\n                  \"database.history.kafka.topic\": \"schema-changes.acos\"\n                }\n}",
+											"options": {
+												"raw": {}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8083/connectors",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8083",
+											"path": [
+												"connectors"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Sink",
+							"item": [
+								{
+									"name": "Create Sink",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"legacy-acos-sink\",\n  \"config\": {\n    \"connector.class\":\"io.confluent.connect.jdbc.JdbcSinkConnector\",\n    \"tasks.max\":\"1\",\n    \"connection.url\":\"jdbc:mysql://db2.legacy.dev/picpay_db2\",\n    \"connection.user\":\"root\",\n    \"connection.password\":\"root\",\n\t\"table.name.format\": \"acos\",    \n    \"topics\":\"server.picpay.acos\",\n    \"transforms\": \"unwrap\",\n    \"transforms.unwrap.type\": \"io.debezium.transforms.ExtractNewRecordState\",\n    \"transforms.unwrap.drop.tombstones\": \"false\",\n    \"auto.create\": \"true\",\n    \"insert.mode\": \"upsert\",\n    \"delete.enabled\": \"true\",\n    \"pk.fields\": \"id\",\n    \"pk.mode\": \"record_key\"    \n  }\n}",
+											"options": {
+												"raw": {}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8083/connectors",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8083",
+											"path": [
+												"connectors"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "MongoDB",
+					"item": [
+						{
+							"name": "Sink",
+							"item": [
+								{
+									"name": "Create Sink",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"legacy-transactions-mongo-sink\",\n  \"config\": {\n    \"connector.class\": \"at.grahsl.kafka.connect.mongodb.MongoDbSinkConnector\",  \n    \"topics\": \"server.picpay.transactions\",\n    \"mongodb.connection.uri\": \"mongodb://mongo.bills.dev:27017/bills?w=1&journal=true\",\n    \"mongodb.collection\": \"transactions\",\n    \"mongodb.change.data.capture.handler\": \"at.grahsl.kafka.connect.mongodb.cdc.debezium.rdbms.mysql.MysqlHandler\"\n  }   \n}",
+											"options": {
+												"raw": {}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8083/connectors",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8083",
+											"path": [
+												"connectors"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Source",
+							"item": [
+								{
+									"name": "Create Source",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n \"name\": \"legacy-bills-mongo-source\",\n \"config\": {\n     \"connector.class\" : \"io.debezium.connector.mongodb.MongoDbConnector\",\n     \"tasks.max\" : \"1\",\n     \"mongodb.hosts\" : \"rs0/mongo.bills.dev:27017\",\n     \"mongodb.name\" : \"bills\",\n     \"database.whitelist\": \"bills\",\n     \"collection.whitelist\": \"bills\",     \n     \"database.history.kafka.bootstrap.servers\" : \"kafka:9092\",\n     \"database.history.kafka.topic\": \"schema-changes.bills\"\n     }\n }\t",
+											"options": {
+												"raw": {}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8083/connectors",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8083",
+											"path": [
+												"connectors"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								""
+							]
+						},
+						"description": "Top-level (root) request that gets the version of the Connect worker that serves the REST request, the git commit ID of the source code, and the Kafka cluster ID that the worker is connected to"
+					},
+					"response": []
+				},
+				{
+					"name": "Get info about the connector",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/connectors/legacy-acos-connector",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"connectors",
+								"legacy-acos-connector"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update or Create connector",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"connector.class\":\"io.debezium.connector.mysql.MySqlConnector\",\"incrementing.column.name\":\"id\",\"database.user\":\"root\",\"database.server.id\":\"184054\",\"tasks.max\":\"1\",\"database.history.kafka.bootstrap.servers\":\"kafka:9092\",\"database.history.kafka.topic\":\"schema-changes.acos\",\"database.server.name\":\"server\",\"batch.max.rows\":\"10000\",\"table.types\":\"TABLE\",\"database.port\":\"3306\",\"table.whitelist\":\"picpay.acos\",\"mode\":\"incrementing\",\"database.hostname\":\"db.legacy.dev\",\"database.password\":\"root\",\"poll.interval.ms\":\"5000\",\"name\":\"legacy-acos-connector\",\"topic\":\"acos\",\"database.whitelist\":\"picpay\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8083/connectors/legacy-acos-connector/config",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"connectors",
+								"legacy-acos-connector",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get current status of the connector",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/connectors/legacy-transactions-source232/status",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"connectors",
+								"legacy-transactions-source232",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Restart the connector",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/connectors/legacy-acos-connector/restart",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"connectors",
+								"legacy-acos-connector",
+								"restart"
+							]
+						},
+						"description": "Return 409 (Conflict) if rebalance is in process."
+					},
+					"response": []
+				},
+				{
+					"name": "Pause the connector and its tasks",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/connectors/legacy-acos-connector/pause",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"connectors",
+								"legacy-acos-connector",
+								"pause"
+							]
+						},
+						"description": "Pause the connector and its tasks, which stops message processing until the connector is resumed. This call asynchronous and the tasks will not transition to PAUSED state at the same time"
+					},
+					"response": []
+				},
+				{
+					"name": "Resume a paused connector",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/connectors/legacy-acos-connector/resume",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"connectors",
+								"legacy-acos-connector",
+								"resume"
+							]
+						},
+						"description": "Resume a paused connector or do nothing if the connector is not paused. This call asynchronous and the tasks will not transition to RUNNING state at the same time."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a connector",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/connectors/legacy-acos-connector222",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"connectors",
+								"legacy-acos-connector222"
+							]
+						},
+						"description": "Delete a connector, halting all tasks and deleting its configuration. Return 409 (Conflict) if rebalance is in process."
+					},
+					"response": []
+				},
+				{
+					"name": "Get a list of active connectors",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/connectors",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"connectors"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Tasks",
+			"item": [
+				{
+					"name": "Get a list of tasks currently running for the connector",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/connectors/legacy-acos-connector/tasks",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"connectors",
+								"legacy-acos-connector",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a task’s status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/connectors/legacy-acos-connector/tasks/0/status",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"connectors",
+								"legacy-acos-connector",
+								"tasks",
+								"0",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Restart an individual task",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/connectors/legacy-acos-connector/tasks/0/restart",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"connectors",
+								"legacy-acos-connector",
+								"tasks",
+								"0",
+								"restart"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Plugins",
+			"item": [
+				{
+					"name": "Validate the provided configuration values against the configuration definition",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"connector.class\": \"io.debezium.connector.mysql.MySqlConnector\", \"topics\": \"server.picpay.acos\",\"tasks.max\": \"1\"}"
+						},
+						"url": {
+							"raw": "http://localhost:8083/connector-plugins/MySqlConnector/config/validate",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"connector-plugins",
+								"MySqlConnector",
+								"config",
+								"validate"
+							]
+						},
+						"description": "Validate the provided configuration values against the configuration definition. This API performs per config validation, returns suggested values and error messages during validation.\n\n"
+					},
+					"response": []
+				},
+				{
+					"name": "Return a list of connector plugins installed in the Kafka Connect cluster",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/connector-plugins/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"connector-plugins",
+								""
+							]
+						},
+						"description": "Return a list of connector plugins installed in the Kafka Connect cluster. Note that the API only checks for connectors on the worker that handles the request, which means it is possible to see inconsistent results, especially during a rolling upgrade if you add new connector jars."
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Topics",
+			"item": [
+				{
+					"name": "Returns a list of connector topic names",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/connectors/legacy-acos-connector/topics",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"connectors",
+								"legacy-acos-connector",
+								"topics"
+							]
+						},
+						"description": "Returns a list of connector topic names. There is no defined order in which the topics are returned and consecutive calls may return the same topic names but in different order. This request is independent of whether a connector is running, and will return an empty set of topics, both for connectors that don’t have active topics as well as non-existent connectors."
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "SchemaRegistry",
+			"item": [],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
