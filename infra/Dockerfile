@@ -1,25 +1,19 @@
-ARG DEBEZIUM_VERSION=1.1
+ARG DEBEZIUM_VERSION
 
-FROM debezium/connect:$DEBEZIUM_VERSION
+FROM confluentinc/cp-kafka-connect-base
 
-ARG MYSQL_VERSION=8.0.19
-ARG KAFKA_JDBC_CONNECTOR_VERSION=5.3.1
-ARG MONGODB_CONNECTOR=1.4.0
+RUN echo "===> Installing MySQL CDC Debezium Connector ..." \
+    && confluent-hub install debezium/debezium-connector-mysql:latest --no-prompt
 
-# Fetch and deploy MySQL JDBC driver
-RUN cd /kafka/libs && \
-    curl -v -O https://downloads.mysql.com/archives/get/p/3/file/mysql-connector-java-$MYSQL_VERSION.tar.gz -L && \
-    tar -zxvf mysql-connector-java-$MYSQL_VERSION.tar.gz mysql-connector-java-$MYSQL_VERSION/mysql-connector-java-$MYSQL_VERSION.jar && \
-    mv mysql-connector-java-$MYSQL_VERSION/mysql-connector-java-$MYSQL_VERSION.jar . && \ 
-    rm -rf mysql-connector-java-$MYSQL_VERSION mysql-connector-java-$MYSQL_VERSION.tar.gz   
+RUN echo "===> Installing MySQL connector" \
+    && curl -v -O https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.19.tar.gz -L \ 
+    && tar -xzf mysql-connector-java-8.0.19.tar.gz -C /usr/share/java/confluent-hub-client --strip-components=1 mysql-connector-java-8.0.19/mysql-connector-java-8.0.19.jar
 
-# Fetch and deploy MongoDB sink connector
-RUN cd /kafka/libs && \
-curl -sO https://repo1.maven.org/maven2/at/grahsl/kafka/connect/kafka-connect-mongodb/$MONGODB_CONNECTOR/kafka-connect-mongodb-$MONGODB_CONNECTOR.jar
+RUN echo "===> Installing JDBC Source/Sink Connector ..." \
+    && confluent-hub install confluentinc/kafka-connect-jdbc:latest --no-prompt    
 
-# Fetch and deploy Kafka source connector JDBC
-ENV KAFKA_CONNECT_JDBC_DIR=$KAFKA_CONNECT_PLUGINS_DIR/kafka-connect-jdbc
-RUN mkdir $KAFKA_CONNECT_JDBC_DIR
+RUN echo "===> Installing MongoDB CDC Debezium Connector ..." \
+    && confluent-hub install debezium/debezium-connector-mongodb:1.2.0 --no-prompt
 
-RUN cd $KAFKA_CONNECT_JDBC_DIR && \
-    curl -sO https://packages.confluent.io/maven/io/confluent/kafka-connect-jdbc/$KAFKA_JDBC_CONNECTOR_VERSION/kafka-connect-jdbc-$KAFKA_JDBC_CONNECTOR_VERSION.jar
+RUN echo "===> Installing MongoDB Source/Sink Connector ..." \
+    && confluent-hub install mongodb/kafka-connect-mongodb:1.1.0 --no-prompt
