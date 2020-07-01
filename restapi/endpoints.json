@@ -26,7 +26,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"name\": \"legacy-transactions-source232\",           \n            \"config\": {\n                  \"connector.class\": \"io.debezium.connector.mysql.MySqlConnector\",\n                  \"tasks.max\": \"1\",\n                  \"database.hostname\": \"db.legacy.dev\",\n                  \"database.port\": \"3306\",\n                  \"database.user\": \"root\",\n                  \"database.password\": \"root\",\n                  \"database.server.id\": \"184054\",\n                  \"database.server.name\": \"server\",\n                  \"database.whitelist\": \"picpay\",\n                  \"table.types\": \"TABLE\",\n                  \"table.whitelist\": \"picpay.transactions\",    \n                  \"mode\":\"incrementing\",\n                  \"incrementing.column.name\": \"id\",                                                                     \n                  \"topic\":\"server.picpay.transactions\",\n                  \"database.history.kafka.bootstrap.servers\": \"kafka:9092\",\n                  \"database.history.kafka.topic\": \"schema-changes.transactions\"\t\t\n                }\n}",
+											"raw": "{\n    \"name\": \"legacy-transactions-source\",           \n            \"config\": {\n                  \"connector.class\": \"io.debezium.connector.mysql.MySqlConnector\",\n                  \"tasks.max\": \"1\",\n                  \"database.hostname\": \"db.legacy.dev\",\n                  \"database.port\": \"3306\",\n                  \"database.user\": \"root\",\n                  \"database.password\": \"root\",\n                  \"database.server.id\": \"184054\",\n                  \"database.server.name\": \"server\",\n                  \"database.whitelist\": \"picpay\",\n                  \"table.types\": \"TABLE\",\n                  \"table.whitelist\": \"picpay.transactions\",    \n                  \"mode\":\"incrementing\",\n                  \"incrementing.column.name\": \"id\",                                                                     \n                  \"topic\":\"server.picpay.transactions\",\n                  \"database.history.kafka.bootstrap.servers\": \"kafka:9092\",\n                  \"database.history.kafka.topic\": \"schema-changes.transactions\"\t\t\n                }\n}",
 											"options": {
 												"raw": {}
 											}
@@ -57,7 +57,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"name\": \"legacy-acos-avro-source\",           \n            \"config\": {\n                  \"connector.class\": \"io.debezium.connector.mysql.MySqlConnector\",\n                  \"tasks.max\": \"1\",\n                  \"database.hostname\": \"db.legacy.dev\",\n                  \"database.port\": \"3306\",\n                  \"database.user\": \"root\",\n                  \"database.password\": \"root\",\n                  \"database.server.id\": \"184054\",\n                  \"database.server.name\": \"server\",\n                  \"database.whitelist\": \"picpay\",\n                  \"table.types\": \"TABLE\",\n                  \"table.whitelist\": \"picpay.acos\",    \n                  \"mode\":\"incrementing\",\n                  \"incrementing.column.name\": \"id\",                                                                     \n                  \"topic\":\"server.picpay.acos\",\n                  \"poll.interval.ms\": \"5000\",\n                  \"batch.max.rows\": \"10000\",\n                  \"key.converter\": \"io.confluent.connect.avro.AvroConverter\",\n                  \"key.converter.schema.registry.url\": \"http://kafka-zookeeper_schema-registry_1:8081\",\n                  \"value.converter\": \"io.confluent.connect.avro.AvroConverter\",\n                  \"value.converter.schema.registry.url\": \"http://kafka-zookeeper_schema-registry_1:8081\",                  \n                  \"database.history.kafka.bootstrap.servers\": \"kafka:9092\",\n                  \"database.history.kafka.topic\": \"schema-changes.acos\"\n                }\n}",
+											"raw": "{\n    \"name\": \"legacy-apiclients-avro-source\",           \n            \"config\": {\n                  \"connector.class\": \"io.debezium.connector.mysql.MySqlConnector\",\n                  \"tasks.max\": \"1\",\n                  \"database.hostname\": \"db.legacy.dev\",\n                  \"database.port\": \"3306\",\n                  \"database.user\": \"root\",\n                  \"database.password\": \"root\",\n                  \"database.server.id\": \"184054\",\n                  \"database.server.name\": \"server\",\n                  \"database.whitelist\": \"picpay\",\n                  \"table.types\": \"TABLE\",\n                  \"table.whitelist\": \"picpay.api_clients\",    \n                  \"mode\":\"incrementing\",\n                  \"incrementing.column.name\": \"id\",                                                                     \n                  \"topic\":\"server.picpay.api_clients\",\n                  \"poll.interval.ms\": \"5000\",\n                  \"batch.max.rows\": \"10000\",\n\t\t\t      \"key.converter\": \"io.confluent.connect.avro.AvroConverter\",\n\t\t\t      \"key.converter.schema.registry.url\": \"http://schema_registry:8081\",\n\t\t\t      \"value.converter\": \"io.confluent.connect.avro.AvroConverter\",\n\t\t\t      \"value.converter.schema.registry.url\": \"http://schema_registry:8081\",                  \n                  \"database.history.kafka.bootstrap.servers\": \"broker:9092\",\n                  \"database.history.kafka.topic\": \"schema-changes.api_clients\"\n                }\n}",
 											"options": {
 												"raw": {}
 											}
@@ -113,6 +113,37 @@
 										}
 									},
 									"response": []
+								},
+								{
+									"name": "Create Sink with Avro",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"legacy-acos-sink222\",\n  \"config\": {\n    \"connector.class\":\"io.confluent.connect.jdbc.JdbcSinkConnector\",\n    \"tasks.max\":\"1\",\n    \"connection.url\":\"jdbc:mysql://db2.legacy.dev:3306/picpay_db2\",\n    \"connection.user\":\"root\",\n    \"connection.password\":\"root\",\n\t\"table.name.format\": \"acos\",    \n    \"topics\":\"server.picpay.acos\",\n    \"transforms\": \"unwrap\",\n    \"transforms.unwrap.type\": \"io.debezium.transforms.ExtractNewRecordState\",\n    \"transforms.unwrap.drop.tombstones\": \"false\",\n    \"auto.create\": \"true\",\n    \"insert.mode\": \"upsert\",\n    \"key.converter\": \"io.confluent.connect.avro.AvroConverter\",\n    \"key.converter.schema.registry.url\": \"http://schema_registry:8081\",\n    \"value.converter\": \"io.confluent.connect.avro.AvroConverter\",\n\t\"value.converter.schema.registry.url\": \"http://schema_registry:8081\",                  \n    \"delete.enabled\": \"true\",\n    \"pk.fields\": \"id\",\n    \"pk.mode\": \"record_key\"    \n  }\n}",
+											"options": {
+												"raw": {}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8083/connectors",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8083",
+											"path": [
+												"connectors"
+											]
+										}
+									},
+									"response": []
 								}
 							],
 							"protocolProfileBehavior": {},
@@ -140,7 +171,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"name\": \"legacy-transactions-mongo-sink\",\n  \"config\": {\n    \"connector.class\": \"at.grahsl.kafka.connect.mongodb.MongoDbSinkConnector\",  \n    \"topics\": \"server.picpay.transactions\",\n    \"mongodb.connection.uri\": \"mongodb://mongo.bills.dev:27017/bills?w=1&journal=true\",\n    \"mongodb.collection\": \"transactions\",\n    \"mongodb.change.data.capture.handler\": \"at.grahsl.kafka.connect.mongodb.cdc.debezium.rdbms.mysql.MysqlHandler\"\n  }   \n}",
+											"raw": "{\n  \"name\": \"legacy-acos-mongo-sink\",\n  \"config\": {\n    \"connection.uri\": \"mongodb://mongo.bills.dev:27017/bills?w=1&journal=true\",\n    \"database\": \"bills\",\n    \"topics\": \"server.picpay.acos\",\n    \"connector.class\": \"com.mongodb.kafka.connect.MongoSinkConnector\",\n    \"key.converter\": \"io.confluent.connect.avro.AvroConverter\",\n    \"key.converter.schema.registry.url\": \"http://schema_registry:8081\",\n    \"value.converter\": \"io.confluent.connect.avro.AvroConverter\",\n    \"value.converter.schema.registry.url\": \"http://schema_registry:8081\",\n    \"collection\": \"acos\"\n  }\n}",
 											"options": {
 												"raw": {}
 											}
@@ -178,7 +209,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n \"name\": \"legacy-bills-mongo-source\",\n \"config\": {\n     \"connector.class\" : \"io.debezium.connector.mongodb.MongoDbConnector\",\n     \"tasks.max\" : \"1\",\n     \"mongodb.hosts\" : \"rs0/mongo.bills.dev:27017\",\n     \"mongodb.name\" : \"bills\",\n     \"database.whitelist\": \"bills\",\n     \"collection.whitelist\": \"bills\",     \n     \"database.history.kafka.bootstrap.servers\" : \"kafka:9092\",\n     \"database.history.kafka.topic\": \"schema-changes.bills\"\n     }\n }\t",
+											"raw": "{\n    \"name\": \"legacy-bills-mongo-source2\",\n    \"config\": {\n        \"connector.class\" : \"io.debezium.connector.mongodb.MongoDbConnector\",\n        \"tasks.max\" : \"1\",\n        \"mongodb.hosts\" : \"rs0/mongo.bills.dev:27017\",\n        \"mongodb.name\" : \"Bills.bills.bills\",\n        \"database.whitelist\" : \"bills\",\n        \"collection.whitelist\": \"bills\",\n\t\t\"topic\":\"bills\",        \n\t\t\"key.converter\": \"io.confluent.connect.avro.AvroConverter\",\n\t\t\"key.converter.schema.registry.url\": \"http://schema_registry:8081\",\n\t\t\"value.converter\": \"io.confluent.connect.avro.AvroConverter\",\n\t\t\"value.converter.schema.registry.url\": \"http://schema_registry:8081\",                  \n        \"database.history.kafka.bootstrap.servers\": \"broker:9092\"\n  } \n}",
 											"options": {
 												"raw": {}
 											}
@@ -563,11 +594,6 @@
 					"response": []
 				}
 			],
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "SchemaRegistry",
-			"item": [],
 			"protocolProfileBehavior": {}
 		}
 	],
