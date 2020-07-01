@@ -15,3 +15,6 @@ RUN echo "===> Installing MongoDB CDC Debezium Connector ..." \
 
 RUN echo "===> Installing MongoDB Source/Sink Connector ..." \
     && confluent-hub install mongodb/kafka-connect-mongodb:1.1.0 --no-prompt
+
+RUN echo "===> Installing REDIS Sink Connector ..." \
+    && confluent-hub install jcustenborder/kafka-connect-redis:latest --no-prompt
