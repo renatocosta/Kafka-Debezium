@@ -1,5 +1,3 @@
-ARG DEBEZIUM_VERSION
-
 FROM confluentinc/cp-kafka-connect-base
 
 RUN echo "===> Installing MySQL CDC Debezium Connector ..." \
