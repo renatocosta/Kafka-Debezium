@@ -11,10 +11,10 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     networks:
       - bubble
-  broker:
-    container_name: broker
+  kafka.picpay.dev:
+    container_name: kafka.picpay.dev
     image: "confluentinc/cp-enterprise-kafka:4.1.0"
-    hostname: broker
+    hostname: kafka.picpay.dev
     depends_on:
       - zookeeper
     ports:
@@ -23,48 +23,31 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_BROKER_RACK: rack-a
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      KAFKA_ADVERTISED_HOST_NAME: 192.168.0.4
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://192.168.0.4:9092'
+      KAFKA_ADVERTISED_HOST_NAME: 192.168.0.2
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://192.168.0.2:9092'
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
       KAFKA_DELETE_TOPIC_ENABLE: "true"
       KAFKA_JMX_PORT: 9999
-      KAFKA_JMX_HOSTNAME: 'broker'
+      KAFKA_JMX_HOSTNAME: 'kafka.picpay.dev'
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker:9092
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: kafka.picpay.dev:9092
       CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: zookeeper:2181
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
       CONFLUENT_METRICS_ENABLE: 'true'
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
     networks:
       - bubble
-  schema_registry:
-    container_name: schema_registry  
-    image: "confluentinc/cp-schema-registry:4.1.0"
-    hostname: schema_registry
-    depends_on:
-      - zookeeper
-      - broker
-    ports:
-      - "8081:8081"
-    environment:
-      SCHEMA_REGISTRY_HOST_NAME: schema_registry
-      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper:2181'
-      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN: '*'
-      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS: 'GET,POST,PUT,OPTIONS'
-    networks:
-      - bubble     
   connect:
     container_name: connect  
     build: .    
     hostname: connect
     depends_on:
       - zookeeper
-      - broker
-      - schema_registry
+      - kafka.picpay.dev
     ports:
       - "8083:8083"
     environment:
-      CONNECT_BOOTSTRAP_SERVERS: 'broker:9092'
+      CONNECT_BOOTSTRAP_SERVERS: 'kafka.picpay.dev:9092'
       CONNECT_REST_ADVERTISED_HOST_NAME: connect
       CONNECT_REST_PORT: 8083
       CONNECT_GROUP_ID: compose-connect-group
